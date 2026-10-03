@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SIA Lab 1 - System Integration</title>
+    <style>
+    body { 
+        font-family: Arial, sans-serif; 
+        margin: 0; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #97e7f1;
+    }
+    .container { 
+        width: 100%;
+        max-width: 400px; 
+        padding: 20px; 
+        border: 1px solid #ccc; 
+        border-radius: 8px; 
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    input, select, button { 
+        width: 100%; 
+        padding: 10px; 
+        margin: 8px 0; 
+        box-sizing: border-box; 
+    }
+    pre { 
+        background: #f4f4f4; 
+        padding: 10px; 
+        overflow-x: auto; 
+        white-space: pre-wrap; 
+        font-size: 1.2em; 
+        font-weight: bold; 
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2> System Integration Form </h2>
+        <input type="number" id="num1" value="0" placeholder="Enter First Number" required>
+        <input type="number" id="num2" value="0" placeholder="Enter Second Number" required>
+        
+        <select id="operation">
+            <option value="add">Add</option>
+            <option value="subtract">Subtract</option>
+            <option value="multiply">Multiply</option>
+            <option value="divide">Divide</option>
+        </select>
+        
+        <button type="button" id="calcBtn">Calculate</button>
+
+        <h3>Result from Gateway:</h3>
+        <pre id="result">Response will appear here...</pre>
+    </div>
+
+    <script>
+        document.getElementById('calcBtn').addEventListener('click', async () => {
+            const num1Input = document.getElementById('num1').value;
+            const num2Input = document.getElementById('num2').value;
+            const operation = document.getElementById('operation').value;
+            const resultBox = document.getElementById('result');
+
+            resultBox.textContent = 'Calculating...';
+
+            try {
+                const response = await fetch('http://127.0.0.1:3000/api/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        num1: parseFloat(num1Input) || 0,
+                        num2: parseFloat(num2Input) || 0,
+                        operation: operation
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.python_result && data.python_result.result !== undefined) {
+                    // Output only the numeric result
+                    resultBox.textContent = data.python_result.result;
+                } else {
+                    // Display error message if the calculation failed
+                    resultBox.textContent = data.error || data.python_result?.message || 'Error processing calculation';
+                }
+            } catch (error) {
+                resultBox.textContent = 'Error connecting to Gateway: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

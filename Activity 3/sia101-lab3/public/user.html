@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #eef4ff; padding: 30px; }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    button {
+      margin: 5px;
+      padding: 10px 14px;
+      background: #123c8c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #0d2d6b; }
+    pre { background: #f4f4f4; padding: 15px; border-radius: 8px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>User Dashboard</h2>
+    <p id="welcome"></p>
+    <button id="loadProfile">GET /api/profile</button>
+    <button id="logout">Logout</button>
+    <pre id="output">API response will appear here...</pre>
+  </div>
+  <script>
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    // Added missing backticks around the template literal
+    document.getElementById('welcome').textContent = `Logged in as User: ${user.username}`;
+
+    async function callApi(url, options = {}) {
+      options.headers = {
+        ...options.headers,
+        // Added missing backticks around the template literal
+        'Authorization': `Bearer ${token}`
+      };
+      const response = await fetch(url, options);
+      const data = await response.json();
+      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    }
+
+    document.getElementById('loadProfile').onclick = () => callApi('/api/profile');
+    document.getElementById('logout').onclick = () => {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "role-login-lab",
+  "version": "1.0.0",
+  "description": "Role-Based Login System with REST API CRUD",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.3"
+  }
+}

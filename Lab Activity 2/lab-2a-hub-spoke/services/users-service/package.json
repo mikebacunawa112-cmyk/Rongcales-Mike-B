@@ -1,0 +1,12 @@
+{
+  "name": "user-service",
+  "version": "1.0.0",
+  "description": "Mock User Service Spoke 1",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -1,96 +1,418 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>SIA Lab 1 - System Integration</title>
-    <style>
-    body { 
-        font-family: Arial, sans-serif; 
-        margin: 0; 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background-color: #97e7f1;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    color: white;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.calculator {
+    width: min(100%, 290px);
+    padding: 8px;
+}
+
+.display {
+    height: 90px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 8px 5px 12px;
+    overflow: hidden;
+}
+
+.expression {
+    color: #999;
+    font-size: 15px;
+    min-height: 21px;
+    width: 100%;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.result {
+    font-size: clamp(22px, 6vw, 36px);
+    font-weight: 300;
+    width: 100%;
+    max-width: 100%;
+    text-align: right;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    line-height: 1.1;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+button {
+    border: none;
+    border-radius: 14px;
+    aspect-ratio: 1 / 1;
+    font-size: 21px;
+    cursor: pointer;
+    background: #333;
+    color: white;
+    transition: 0.15s;
+}
+
+button:active {
+    opacity: 0.65;
+    transform: scale(0.95);
+}
+
+.function {
+    background: #a5a5a5;
+    color: black;
+}
+
+.operator {
+    background: #ff9f0a;
+    color: white;
+}
+
+.zero {
+    grid-column: span 2;
+    border-radius: 14px;
+    aspect-ratio: auto;
+    text-align: left;
+    padding-left: 22px;
+}
+
+.scientific {
+    font-size: 14px;
+    background: #505050;
+}
+
+.status {
+    text-align: center;
+    color: #777;
+    font-size: 10px;
+    margin-top: 6px;
+    min-height: 12px;
+}
+
+/* Medium screens */
+@media (max-height: 700px) {
+    .calculator {
+        width: min(100%, 270px);
+        padding: 6px;
     }
-    .container { 
-        width: 100%;
-        max-width: 400px; 
-        padding: 20px; 
-        border: 1px solid #ccc; 
-        border-radius: 8px; 
-        background-color: #ffffff;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+    .display {
+        height: 80px;
     }
-    input, select, button { 
-        width: 100%; 
-        padding: 10px; 
-        margin: 8px 0; 
-        box-sizing: border-box; 
+
+    .buttons {
+        gap: 5px;
     }
-    pre { 
-        background: #f4f4f4; 
-        padding: 10px; 
-        overflow-x: auto; 
-        white-space: pre-wrap; 
-        font-size: 1.2em; 
-        font-weight: bold; 
-        text-align: center;
+
+    button {
+        font-size: 19px;
+        border-radius: 12px;
     }
+
+    .zero {
+        border-radius: 12px;
+    }
+
+    .result {
+        font-size: clamp(20px, 5vw, 32px);
+    }
+
+    .expression {
+        font-size: 13px;
+    }
+
+    .scientific {
+        font-size: 12px;
+    }
+
+    .status {
+        margin-top: 4px;
+    }
+}
+
+/* Short screens */
+@media (max-height: 550px) {
+    .calculator {
+        width: min(100%, 240px);
+        padding: 4px;
+    }
+
+    .display {
+        height: 65px;
+        padding-bottom: 5px;
+    }
+
+    .buttons {
+        gap: 4px;
+    }
+
+    button {
+        font-size: 17px;
+        border-radius: 10px;
+    }
+
+    .zero {
+        border-radius: 10px;
+    }
+
+    .result {
+        font-size: clamp(18px, 4vw, 27px);
+    }
+
+    .expression {
+        font-size: 11px;
+        min-height: 15px;
+    }
+
+    .scientific {
+        font-size: 11px;
+    }
+
+    .status {
+        font-size: 9px;
+        margin-top: 3px;
+    }
+}
 </style>
 </head>
-<body>
-    <div class="container">
-        <h2> System Integration Form </h2>
-        <input type="number" id="num1" value="0" placeholder="Enter First Number" required>
-        <input type="number" id="num2" value="0" placeholder="Enter Second Number" required>
-        
-        <select id="operation">
-            <option value="add">Add</option>
-            <option value="subtract">Subtract</option>
-            <option value="multiply">Multiply</option>
-            <option value="divide">Divide</option>
-        </select>
-        
-        <button type="button" id="calcBtn">Calculate</button>
 
-        <h3>Result from Gateway:</h3>
-        <pre id="result">Response will appear here...</pre>
+<body>
+
+<div class="calculator">
+
+    <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="result" id="result">0</div>
     </div>
 
-    <script>
-        document.getElementById('calcBtn').addEventListener('click', async () => {
-            const num1Input = document.getElementById('num1').value;
-            const num2Input = document.getElementById('num2').value;
-            const operation = document.getElementById('operation').value;
-            const resultBox = document.getElementById('result');
+    <div class="buttons">
 
-            resultBox.textContent = 'Calculating...';
+        <button class="function" onclick="clearAll()">AC</button>
+        <button class="function" onclick="deleteNumber()">⌫</button>
+        <button class="scientific" onclick="percentage()">%</button>
+        <button class="operator" onclick="chooseOperation('divide')">÷</button>
 
-            try {
-                const response = await fetch('http://127.0.0.1:3000/api/calculate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        num1: parseFloat(num1Input) || 0,
-                        num2: parseFloat(num2Input) || 0,
-                        operation: operation
-                    })
-                });
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button class="operator" onclick="chooseOperation('multiply')">×</button>
 
-                const data = await response.json();
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button class="operator" onclick="chooseOperation('subtract')">−</button>
 
-                if (response.ok && data.python_result && data.python_result.result !== undefined) {
-                    // Output only the numeric result
-                    resultBox.textContent = data.python_result.result;
-                } else {
-                    // Display error message if the calculation failed
-                    resultBox.textContent = data.error || data.python_result?.message || 'Error processing calculation';
-                }
-            } catch (error) {
-                resultBox.textContent = 'Error connecting to Gateway: ' + error.message;
-            }
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button class="operator" onclick="chooseOperation('add')">+</button>
+
+        <button class="zero" onclick="appendNumber('0')">0</button>
+        <button onclick="appendNumber('.')">.</button>
+        <button class="operator" onclick="calculate()">=</button>
+
+        <button class="scientific" onclick="chooseOperation('modulo')">MOD</button>
+        <button class="scientific" onclick="chooseOperation('power')">xʸ</button>
+        <button class="scientific" onclick="squareRoot()">√</button>
+        <button class="scientific" onclick="clearAll()">C</button>
+
+    </div>
+
+    <div class="status" id="status">Ready</div>
+
+</div>
+
+<script>
+let current = '0';
+let firstNumber = null;
+let operation = null;
+let resetDisplay = false;
+
+const resultDisplay = document.getElementById('result');
+const expressionDisplay = document.getElementById('expression');
+const statusDisplay = document.getElementById('status');
+
+const symbols = {
+    add: '+',
+    subtract: '−',
+    multiply: '×',
+    divide: '÷',
+    modulo: 'MOD',
+    power: '^'
+};
+
+function updateDisplay() {
+    resultDisplay.textContent = current;
+}
+
+function updateExpression() {
+    if (firstNumber !== null && operation) {
+        expressionDisplay.textContent =
+            firstNumber + ' ' + symbols[operation] + ' ' +
+            (resetDisplay ? '' : current);
+    } else {
+        expressionDisplay.textContent = '';
+    }
+}
+
+function appendNumber(number) {
+    if (resetDisplay) {
+        current = '0';
+        resetDisplay = false;
+    }
+
+    if (number === '.' && current.includes('.')) return;
+
+    if (current === '0' && number !== '.') {
+        current = number;
+    } else {
+        current += number;
+    }
+
+    updateDisplay();
+    updateExpression();
+}
+
+function chooseOperation(op) {
+    if (firstNumber !== null && operation && !resetDisplay) {
+        calculate();
+        return;
+    }
+
+    firstNumber = parseFloat(current);
+    operation = op;
+    resetDisplay = true;
+
+    updateExpression();
+    statusDisplay.textContent = 'Enter next number';
+}
+
+async function calculate() {
+    if (firstNumber === null || !operation || resetDisplay) return;
+
+    const secondNumber = parseFloat(current);
+    const op = operation;
+    const first = firstNumber;
+
+    expressionDisplay.textContent =
+        first + ' ' + symbols[op] + ' ' + secondNumber + ' =';
+
+    statusDisplay.textContent = 'Calculating...';
+
+    await sendCalculation(first, secondNumber, op);
+}
+
+async function sendCalculation(num1, num2, op) {
+    try {
+        const response = await fetch('/api/calculate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                num1: num1,
+                num2: num2,
+                operation: op
+            })
         });
-    </script>
+
+        const data = await response.json();
+
+        if (!response.ok || data.python_result?.status !== 'success') {
+            throw new Error(
+                data.python_result?.message ||
+                data.error ||
+                'Calculation failed'
+            );
+        }
+
+        current = String(data.python_result.result);
+        updateDisplay();
+
+        statusDisplay.textContent = 'Calculation successful';
+
+        firstNumber = null;
+        operation = null;
+        resetDisplay = true;
+
+    } catch (error) {
+        statusDisplay.textContent = error.message;
+    }
+}
+
+function squareRoot() {
+    const number = parseFloat(current);
+
+    if (number < 0) {
+        statusDisplay.textContent =
+            'Cannot calculate square root of negative number';
+        return;
+    }
+
+    expressionDisplay.textContent = '√(' + number + ') =';
+    statusDisplay.textContent = 'Calculating...';
+
+    firstNumber = null;
+    operation = null;
+    resetDisplay = false;
+
+    sendCalculation(number, 0, 'square-root');
+}
+
+function percentage() {
+    current = String(parseFloat(current) / 100);
+    updateDisplay();
+    updateExpression();
+}
+
+function deleteNumber() {
+    if (resetDisplay) return;
+
+    current = current.length > 1
+        ? current.slice(0, -1)
+        : '0';
+
+    updateDisplay();
+    updateExpression();
+}
+
+function clearAll() {
+    current = '0';
+    firstNumber = null;
+    operation = null;
+    resetDisplay = false;
+
+    expressionDisplay.textContent = '';
+    statusDisplay.textContent = 'Ready';
+
+    updateDisplay();
+}
+</script>
+
 </body>
 </html>
